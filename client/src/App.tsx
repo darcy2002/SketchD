@@ -1,16 +1,25 @@
+import { useRef, useState } from 'react'
+import type { Editor } from 'tldraw'
 import Toolbar from './components/Toolbar'
 import SplitView from './components/SplitView'
 import StatusBar from './components/StatusBar'
 import { useSketchStore } from './store/sketchStore'
-
-const PLACEHOLDER_BASE64 =
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+import type { CanvasPanelHandle } from './components/CanvasPanel'
 
 export default function App() {
+  const canvasRef = useRef<CanvasPanelHandle>(null)
+  const [editor, setEditor] = useState<Editor | null>(null)
   const startGeneration = useSketchStore((s) => s.startGeneration)
+  const setError = useSketchStore((s) => s.setError)
 
-  const handleGenerate = () => {
-    startGeneration(PLACEHOLDER_BASE64)
+  const handleGenerate = async () => {
+    const base64 = await canvasRef.current?.exportCanvas()
+    if (!base64) {
+      setError('Please draw something first')
+      return
+    }
+    setError(null)
+    startGeneration(base64)
   }
 
   return (
@@ -18,9 +27,9 @@ export default function App() {
       className="flex flex-col h-screen w-screen overflow-hidden"
       style={{ background: '#0a0a0c', color: '#e8e4dc' }}
     >
-      <Toolbar onGenerate={handleGenerate} />
+      <Toolbar onGenerate={handleGenerate} editor={editor} />
       <div className="flex-1 overflow-hidden">
-        <SplitView />
+        <SplitView ref={canvasRef} onEditorReady={setEditor} />
       </div>
       <StatusBar />
     </div>

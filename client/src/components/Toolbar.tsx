@@ -1,6 +1,7 @@
 import { MousePointer2, Pencil, Square, Type, Undo2, Trash2, Zap } from 'lucide-react'
 import { useSketchStore } from '../store/sketchStore'
 import { useState } from 'react'
+import type { Editor } from 'tldraw'
 
 type Tool = 'select' | 'draw' | 'rectangle' | 'text'
 
@@ -13,9 +14,10 @@ const toolButtons: { id: Tool; icon: typeof MousePointer2 }[] = [
 
 interface ToolbarProps {
   onGenerate: () => void
+  editor: Editor | null
 }
 
-export default function Toolbar({ onGenerate }: ToolbarProps) {
+export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
   const [activeTool, setActiveTool] = useState<Tool>('draw')
   const isStreaming = useSketchStore((s) => s.isStreaming)
   const stopGeneration = useSketchStore((s) => s.stopGeneration)
@@ -23,6 +25,22 @@ export default function Toolbar({ onGenerate }: ToolbarProps) {
   const handleGenerateClick = () => {
     if (isStreaming) stopGeneration()
     else onGenerate()
+  }
+
+  const setTool = (tool: Tool) => {
+    setActiveTool(tool)
+    if (!editor) return
+    if (tool === 'select') editor.setCurrentTool('select')
+    else if (tool === 'draw') editor.setCurrentTool('draw')
+    else if (tool === 'rectangle') editor.setCurrentTool('geo', { geo: 'rectangle' })
+    else if (tool === 'text') editor.setCurrentTool('text')
+  }
+
+  const handleUndo = () => editor?.undo()
+  const handleClear = () => {
+    if (!editor) return
+    editor.selectAll()
+    editor.deleteShapes(editor.getSelectedShapeIds())
   }
 
   return (
@@ -43,7 +61,7 @@ export default function Toolbar({ onGenerate }: ToolbarProps) {
             return (
               <button
                 key={id}
-                onClick={() => setActiveTool(id)}
+                onClick={() => setTool(id)}
                 className="flex items-center justify-center rounded-md transition-colors"
                 style={{
                   width: 28,
@@ -70,17 +88,24 @@ export default function Toolbar({ onGenerate }: ToolbarProps) {
         <div className="mx-2 h-4 w-px" style={{ background: 'rgba(232,228,220,0.06)' }} />
 
         <div className="flex items-center gap-0.5">
-          {[Undo2, Trash2].map((Icon, i) => (
-            <button
-              key={i}
-              className="flex items-center justify-center rounded-md transition-colors"
-              style={{ width: 28, height: 28 }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(232,228,220,0.06)')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-            >
-              <Icon size={14} strokeWidth={1.5} color="rgba(232,228,220,0.5)" />
-            </button>
-          ))}
+          <button
+            onClick={handleUndo}
+            className="flex items-center justify-center rounded-md transition-colors"
+            style={{ width: 28, height: 28 }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(232,228,220,0.06)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            <Undo2 size={14} strokeWidth={1.5} color="rgba(232,228,220,0.5)" />
+          </button>
+          <button
+            onClick={handleClear}
+            className="flex items-center justify-center rounded-md transition-colors"
+            style={{ width: 28, height: 28 }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(232,228,220,0.06)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            <Trash2 size={14} strokeWidth={1.5} color="rgba(232,228,220,0.5)" />
+          </button>
         </div>
       </div>
 

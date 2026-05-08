@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
-import CanvasPanel from './CanvasPanel'
+import { useEffect, useRef, useState, forwardRef } from 'react'
+import CanvasPanel, { type CanvasPanelHandle } from './CanvasPanel'
 import OutputPanel from './OutputPanel'
+import type { Editor } from 'tldraw'
 
-export default function SplitView() {
+interface SplitViewProps {
+  onEditorReady?: (editor: Editor) => void
+}
+
+const SplitView = forwardRef<CanvasPanelHandle, SplitViewProps>(({ onEditorReady }, ref) => {
   const [leftPct, setLeftPct] = useState(50)
   const [dragging, setDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -35,7 +40,7 @@ export default function SplitView() {
   return (
     <div ref={containerRef} className="flex h-full w-full overflow-hidden">
       <div style={{ width: `${leftPct}%` }} className="h-full">
-        <CanvasPanel />
+        <CanvasPanel ref={ref} onEditorReady={onEditorReady} />
       </div>
 
       <div
@@ -57,4 +62,8 @@ export default function SplitView() {
       </div>
     </div>
   )
-}
+})
+
+SplitView.displayName = 'SplitView'
+
+export default SplitView

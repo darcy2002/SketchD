@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const MODEL = "moonshotai/kimi-k2-5";
+const MODEL = "moonshotai/kimi-k2.6";
 
 export async function generateCode({ imageBase64, prompt, onToken, signal }) {
   const messages = [
@@ -25,7 +25,7 @@ export async function generateCode({ imageBase64, prompt, onToken, signal }) {
       temperature: 0.6,
       max_tokens: 4096,
       stream: true,
-      extra_body: { thinking: false },
+      chat_template_kwargs: { thinking: false },
     },
     {
       headers: {
@@ -47,13 +47,18 @@ export async function generateCode({ imageBase64, prompt, onToken, signal }) {
       buffer = lines.pop();
 
       for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
-        const payload = line.slice(6).trim();
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith("data: ")) continue;
+        const payload = trimmed.slice(6);
         if (payload === "[DONE]") return;
 
         try {
           const json = JSON.parse(payload);
-          const text = json.choices?.[0]?.delta?.content;
+          if (json.choices?.[0]?.finish_reason === "stop") return;
+          const text =
+            json.choices?.[0]?.delta?.content ||
+            json.choices?.[0]?.text ||
+            "";
           if (text) onToken(text);
         } catch {
           // malformed chunk — skip

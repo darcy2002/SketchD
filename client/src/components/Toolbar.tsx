@@ -46,10 +46,10 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
   return (
     <div
       className="flex items-center justify-between px-3 border-b hairline shrink-0"
-      style={{ height: 40, background: '#0a0a0c' }}
+      style={{ height: 52, background: '#0a0a0c' }}
     >
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium tracking-tight">
+        <span className="font-medium tracking-tight" style={{ fontSize: 20 }}>
           sketchd<span style={{ color: '#d4c4a0' }}>.</span>
         </span>
       </div>
@@ -64,8 +64,8 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
                 onClick={() => setTool(id)}
                 className="flex items-center justify-center rounded-md transition-colors"
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: 34,
+                  height: 34,
                   background: active ? 'rgba(212,196,160,0.1)' : 'transparent',
                 }}
                 onMouseEnter={(e) => {
@@ -76,7 +76,7 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
                 }}
               >
                 <Icon
-                  size={14}
+                  size={17}
                   strokeWidth={1.5}
                   color={active ? '#d4c4a0' : 'rgba(232,228,220,0.5)'}
                 />
@@ -91,20 +91,20 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
           <button
             onClick={handleUndo}
             className="flex items-center justify-center rounded-md transition-colors"
-            style={{ width: 28, height: 28 }}
+            style={{ width: 34, height: 34 }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(232,228,220,0.06)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            <Undo2 size={14} strokeWidth={1.5} color="rgba(232,228,220,0.5)" />
+            <Undo2 size={17} strokeWidth={1.5} color="rgba(232,228,220,0.55)" />
           </button>
           <button
             onClick={handleClear}
             className="flex items-center justify-center rounded-md transition-colors"
-            style={{ width: 28, height: 28 }}
+            style={{ width: 34, height: 34 }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(232,228,220,0.06)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            <Trash2 size={14} strokeWidth={1.5} color="rgba(232,228,220,0.5)" />
+            <Trash2 size={17} strokeWidth={1.5} color="rgba(232,228,220,0.55)" />
           </button>
         </div>
       </div>
@@ -112,18 +112,18 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
       <div className="flex items-center gap-3">
         <span
           className="font-mono-code"
-          style={{ fontSize: 10, color: 'rgba(232,228,220,0.3)' }}
+          style={{ fontSize: 12, color: 'rgba(232,228,220,0.45)' }}
         >
           kimi k2.6 / nvidia
         </span>
         <button
           onClick={handleGenerateClick}
-          className="flex items-center gap-1.5 rounded-md px-4 font-medium"
+          className="flex items-center gap-1.5 rounded-md px-5 font-medium"
           style={{
-            height: 30,
+            height: 36,
             background: '#d4c4a0',
             color: '#0a0a0c',
-            fontSize: 11,
+            fontSize: 13,
           }}
         >
           {isStreaming ? (

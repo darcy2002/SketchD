@@ -51,13 +51,13 @@ const CanvasPanel = forwardRef<CanvasPanelHandle, CanvasPanelProps>(
         className="relative h-full w-full border-r hairline"
         style={{ background: '#0a0a0c' }}
       >
-        <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 pointer-events-none">
-          <span style={{ color: '#d4c4a0', fontSize: 10 }} className="font-mono-code">
+        <div className="absolute z-20 flex items-center gap-1.5 pointer-events-none" style={{ top: 16, left: 18 }}>
+          <span style={{ color: '#d4c4a0', fontSize: 13 }} className="font-mono-code">
             {'{01}'}
           </span>
           <span
             className="uppercase tracking-widest"
-            style={{ color: 'rgba(232,228,220,0.3)', fontSize: 9 }}
+            style={{ color: 'rgba(232,228,220,0.5)', fontSize: 12 }}
           >
             canvas
           </span>

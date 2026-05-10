@@ -20,6 +20,7 @@ interface SketchStore {
   stopGeneration: () => void
   setError: (msg: string | null) => void
   resetCode: () => void
+  setCode: (code: string) => void
   toggleRefineMode: () => void
 }
 
@@ -134,6 +135,10 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
 
   resetCode: () => {
     set({ code: '' })
+  },
+
+  setCode: (code: string) => {
+    set({ code })
   },
 
   toggleRefineMode: () => {

@@ -39,14 +39,17 @@ const SplitView = forwardRef<CanvasPanelHandle, SplitViewProps>(({ onEditorReady
 
   return (
     <div ref={containerRef} className="flex h-full w-full overflow-hidden">
-      <div style={{ width: `${leftPct}%` }} className="h-full">
+      <div
+        style={{ width: `${leftPct}%`, pointerEvents: dragging ? 'none' : 'auto' }}
+        className="h-full"
+      >
         <CanvasPanel ref={ref} onEditorReady={onEditorReady} />
       </div>
 
       <div
         onMouseDown={() => setDragging(true)}
         className="relative shrink-0 flex items-center justify-center"
-        style={{ width: 3, cursor: 'col-resize', background: 'transparent' }}
+        style={{ width: 6, cursor: 'col-resize', background: 'transparent' }}
       >
         <div
           style={{
@@ -57,7 +60,13 @@ const SplitView = forwardRef<CanvasPanelHandle, SplitViewProps>(({ onEditorReady
         />
       </div>
 
-      <div style={{ width: `calc(${100 - leftPct}% - 3px)` }} className="h-full">
+      <div
+        style={{
+          width: `calc(${100 - leftPct}% - 6px)`,
+          pointerEvents: dragging ? 'none' : 'auto',
+        }}
+        className="h-full"
+      >
         <OutputPanel />
       </div>
     </div>

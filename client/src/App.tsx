@@ -3,12 +3,14 @@ import type { Editor } from 'tldraw'
 import Toolbar from './components/Toolbar'
 import SplitView from './components/SplitView'
 import StatusBar from './components/StatusBar'
+import Landing from './pages/Landing'
 import { useSketchStore } from './store/sketchStore'
 import type { CanvasPanelHandle } from './components/CanvasPanel'
 
 export default function App() {
   const canvasRef = useRef<CanvasPanelHandle>(null)
   const [editor, setEditor] = useState<Editor | null>(null)
+  const [showLanding, setShowLanding] = useState(true)
   const startGeneration = useSketchStore((s) => s.startGeneration)
   const setError = useSketchStore((s) => s.setError)
 
@@ -20,6 +22,10 @@ export default function App() {
     }
     setError(null)
     startGeneration(base64)
+  }
+
+  if (showLanding) {
+    return <Landing onEnter={() => setShowLanding(false)} />
   }
 
   return (

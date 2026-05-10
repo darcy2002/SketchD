@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Code2, Monitor } from 'lucide-react'
 import Editor from '@monaco-editor/react'
 import { useSketchStore } from '../store/sketchStore'
+import AssetManagement from './AssetManagement'
+import LayoutInspector from './LayoutInspector'
 
 type Tab = 'code' | 'preview'
 
@@ -10,7 +12,51 @@ export default function OutputPanel() {
   const code = useSketchStore((s) => s.code)
   const isStreaming = useSketchStore((s) => s.isStreaming)
   const setError = useSketchStore((s) => s.setError)
+  const setCode = useSketchStore((s) => s.setCode)
   const prevStreamingRef = useRef(isStreaming)
+  const [bottomHeight, setBottomHeight] = useState(180)
+  const [assetWidthPct, setAssetWidthPct] = useState(50)
+  const [draggingV, setDraggingV] = useState(false)
+  const [draggingH, setDraggingH] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const bottomRowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!draggingV && !draggingH) return
+
+    const onMove = (e: MouseEvent) => {
+      if (draggingV) {
+        const el = containerRef.current
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const fromBottom = rect.bottom - e.clientY
+        setBottomHeight(Math.max(60, Math.min(rect.height - 120, fromBottom)))
+      }
+      if (draggingH) {
+        const el = bottomRowRef.current
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const pct = ((e.clientX - rect.left) / rect.width) * 100
+        setAssetWidthPct(Math.max(15, Math.min(85, pct)))
+      }
+    }
+    const onUp = () => {
+      setDraggingV(false)
+      setDraggingH(false)
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    document.body.style.cursor = draggingV ? 'row-resize' : 'col-resize'
+    document.body.style.userSelect = 'none'
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [draggingV, draggingH])
 
   useEffect(() => {
     if (prevStreamingRef.current && !isStreaming && code.trim()) {
@@ -87,14 +133,14 @@ window.onerror = (msg, src, line) => {
 </html>`
 
   return (
-    <div className="relative h-full w-full flex flex-col" style={{ background: '#0a0a0c' }}>
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 pointer-events-none">
-        <span style={{ color: '#d4c4a0', fontSize: 10 }} className="font-mono-code">
+    <div ref={containerRef} className="relative h-full w-full flex flex-col" style={{ background: '#0a0a0c' }}>
+      <div className="absolute z-10 flex items-center gap-1.5 pointer-events-none" style={{ top: 16, right: 18 }}>
+        <span style={{ color: '#d4c4a0', fontSize: 13 }} className="font-mono-code">
           {'{02}'}
         </span>
         <span
           className="uppercase tracking-widest"
-          style={{ color: 'rgba(232,228,220,0.3)', fontSize: 9 }}
+          style={{ color: 'rgba(232,228,220,0.5)', fontSize: 12 }}
         >
           output
         </span>
@@ -102,7 +148,7 @@ window.onerror = (msg, src, line) => {
 
       <div
         className="flex items-center border-b hairline shrink-0"
-        style={{ height: 34, paddingLeft: 12 }}
+        style={{ height: 42, paddingLeft: 12 }}
       >
         {tabs.map(({ id, label, icon: Icon }) => {
           const active = tab === id
@@ -110,28 +156,34 @@ window.onerror = (msg, src, line) => {
             <button
               key={id}
               onClick={() => setTab(id)}
-              className="flex items-center gap-1.5 h-full px-3 transition-colors"
+              className="flex items-center gap-1.5 h-full px-5 transition-colors"
               style={{
-                borderBottom: active ? '1.5px solid #d4c4a0' : '1.5px solid transparent',
-                color: active ? 'rgba(232,228,220,0.8)' : 'rgba(232,228,220,0.22)',
-                fontSize: 11,
+                borderBottom: active ? '2px solid #d4c4a0' : '2px solid transparent',
+                color: active ? 'rgba(232,228,220,0.95)' : 'rgba(232,228,220,0.55)',
+                fontSize: 13,
                 marginBottom: -0.5,
               }}
             >
-              <Icon size={12} strokeWidth={1.5} />
+              <Icon size={14} strokeWidth={1.5} />
               {label}
             </button>
           )
         })}
       </div>
 
-      <div className="flex-1 overflow-hidden relative">
+      <div
+        className="flex-1 overflow-hidden relative"
+        style={{ pointerEvents: draggingV || draggingH ? 'none' : 'auto' }}
+      >
         <div className="h-full w-full" style={{ display: tab === 'code' ? 'block' : 'none' }}>
           <Editor
             height="100%"
             language="javascript"
             theme="sketchd-dark"
             value={code}
+            onChange={(value) => {
+              if (!isStreaming) setCode(value ?? '')
+            }}
             options={{
               readOnly: isStreaming,
               fontSize: 12,
@@ -187,11 +239,45 @@ window.onerror = (msg, src, line) => {
             />
           ) : !code.trim() ? (
             <div className="h-full w-full flex items-center justify-center">
-              <span style={{ color: 'rgba(232,228,220,0.22)', fontSize: 11 }}>
+              <span style={{ color: 'rgba(232,228,220,0.55)', fontSize: 13 }}>
                 preview will render here
               </span>
             </div>
           ) : null}
+        </div>
+      </div>
+
+      <div
+        onMouseDown={() => setDraggingV(true)}
+        className="shrink-0 relative"
+        style={{
+          height: 4,
+          cursor: 'row-resize',
+          background: draggingV ? 'rgba(212,196,160,0.3)' : 'transparent',
+          borderTop: '1px solid rgba(232,228,220,0.06)',
+        }}
+      />
+
+      <div
+        ref={bottomRowRef}
+        className="flex shrink-0"
+        style={{ height: bottomHeight }}
+      >
+        <div style={{ width: `${assetWidthPct}%` }} className="overflow-hidden">
+          <AssetManagement />
+        </div>
+        <div
+          onMouseDown={() => setDraggingH(true)}
+          className="shrink-0"
+          style={{
+            width: 4,
+            cursor: 'col-resize',
+            background: draggingH ? 'rgba(212,196,160,0.3)' : 'transparent',
+            borderLeft: '1px solid rgba(232,228,220,0.06)',
+          }}
+        />
+        <div style={{ width: `calc(${100 - assetWidthPct}% - 4px)` }} className="overflow-hidden">
+          <LayoutInspector />
         </div>
       </div>
     </div>

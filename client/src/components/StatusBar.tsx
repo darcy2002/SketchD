@@ -9,20 +9,20 @@ export default function StatusBar() {
 
   return (
     <div
-      className="flex items-center justify-between px-3 border-t hairline shrink-0"
+      className="flex items-center justify-between px-4 border-t hairline shrink-0"
       style={{
-        height: 26,
+        height: 32,
         background: '#0a0a0c',
-        fontSize: 10,
-        color: 'rgba(232,228,220,0.18)',
+        fontSize: 11,
+        color: 'rgba(232,228,220,0.55)',
       }}
     >
       <div className="flex items-center gap-2">
         <span
           className={isStreaming ? 'pulse-dot' : ''}
           style={{
-            width: 5,
-            height: 5,
+            width: 7,
+            height: 7,
             borderRadius: '50%',
             background: dotColor,
             display: 'inline-block',

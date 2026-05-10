@@ -21,26 +21,51 @@ router.post("/generate", async (req, res) => {
   res.setHeader("X-Accel-Buffering", "no");
   res.flushHeaders();
 
+  req.socket.setTimeout(0);
+  req.socket.setNoDelay(true);
+  req.socket.setKeepAlive(true);
+
+  const heartbeat = setInterval(() => {
+    if (!res.writableEnded) {
+      res.write(': heartbeat\n\n');
+    }
+  }, 5000);
+
   const prompt = mode === "refine" ? REFINE_PROMPT(previousCode) : FRESH_PROMPT;
   const provider = getProvider();
   const abortController = new AbortController();
 
-  req.on("close", () => abortController.abort());
+  let clientClosed = false;
+  res.on("close", () => {
+    if (!res.writableEnded) {
+      clientClosed = true;
+      abortController.abort();
+    }
+  });
 
   try {
     await provider.generateCode({
       imageBase64,
       prompt,
       signal: abortController.signal,
-      onToken: (token) => res.write(`data: ${JSON.stringify({ token })}\n\n`),
+      onToken: (token) => {
+        res.write(`data: ${JSON.stringify({ token })}\n\n`);
+      },
     });
+    clearInterval(heartbeat);
 
     res.write("data: [DONE]\n\n");
     res.end();
   } catch (error) {
-    if (error.name === "AbortError" || error.code === "ERR_CANCELED") return;
-    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-    res.end();
+    clearInterval(heartbeat);
+    if (error.name === "AbortError" || error.code === "ERR_CANCELED") {
+      return;
+    }
+    console.error("provider error:", error.message);
+    if (!clientClosed) {
+      res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+      res.end();
+    }
   }
 });
 

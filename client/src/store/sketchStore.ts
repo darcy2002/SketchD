@@ -52,13 +52,19 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64, mode, previousCode }),
         signal: controller.signal,
+        cache: 'no-store',
+        keepalive: false,
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
+        throw new Error(`Server error: ${response.status}`)
       }
 
-      const reader = response.body!.getReader()
+      if (!response.body) {
+        throw new Error('No response body')
+      }
+
+      const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
 
@@ -76,6 +82,14 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
 
           const payload = trimmed.slice(6)
           if (payload === '[DONE]') {
+            const cleaned = accumulatedCode
+              .replace(/^\s*```[\w]*\n?/, '')
+              .replace(/```\s*$/, '')
+              .trim()
+            if (cleaned !== accumulatedCode) {
+              set({ code: cleaned })
+              accumulatedCode = cleaned
+            }
             if (mode === 'fresh' && accumulatedCode) {
               set({ previousCode: accumulatedCode })
             }

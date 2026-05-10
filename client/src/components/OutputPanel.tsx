@@ -35,8 +35,18 @@ export default function OutputPanel() {
     { id: 'preview', label: 'preview', icon: Monitor },
   ]
 
-  const iframeContent = `
-<!DOCTYPE html>
+  const sanitizedCode = code
+    .replace(/^\s*```[\w]*\n?/, '')
+    .replace(/```\s*$/, '')
+    .replace(/^\s*import\s+.*?$/gm, '')
+    .replace(/export\s+default\s+function/g, 'function')
+    .replace(/export\s+default\s+/g, 'const __SketchdDefault = ')
+    .trim()
+
+  const componentMatch = sanitizedCode.match(/function\s+([A-Z]\w*)/)
+  const componentName = componentMatch?.[1] ?? '__SketchdDefault'
+
+  const iframeContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -53,24 +63,28 @@ export default function OutputPanel() {
 <body>
   <div id="root"></div>
   <script type="text/babel" data-presets="react">
-    ${code}
+${sanitizedCode}
 
-    const root = ReactDOM.createRoot(document.getElementById('root'))
+try {
+  const __Component = eval(${JSON.stringify(componentName)});
+  if (typeof __Component === 'function') {
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(__Component));
+  } else {
+    document.getElementById('root').innerHTML =
+      '<div style="padding:20px;color:#888;font-family:monospace">No component named ' + ${JSON.stringify(componentName)} + ' found</div>';
+  }
+} catch (e) {
+  document.getElementById('root').innerHTML =
+    '<div style="padding:20px;color:red;font-family:monospace">Preview error: ' + e.message + '</div>';
+  parent.postMessage({ type: 'preview-error', error: e.message }, '*');
+}
 
-    const componentMatch = \`${code.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`.match(/export default function (\\w+)/)
-    const ComponentName = componentMatch ? componentMatch[1] : null
-
-    if (ComponentName && window[ComponentName]) {
-      root.render(React.createElement(window[ComponentName]))
-    }
-
-    window.onerror = (msg, src, line) => {
-      parent.postMessage({ type: 'preview-error', error: msg, line }, '*')
-    }
+window.onerror = (msg, src, line) => {
+  parent.postMessage({ type: 'preview-error', error: msg, line }, '*');
+};
   </script>
 </body>
-</html>
-`
+</html>`
 
   return (
     <div className="relative h-full w-full flex flex-col" style={{ background: '#0a0a0c' }}>
@@ -164,20 +178,20 @@ export default function OutputPanel() {
         </div>
 
         <div className="h-full w-full" style={{ display: tab === 'preview' ? 'block' : 'none' }}>
-          {code.trim() ? (
+          {tab === 'preview' && code.trim() ? (
             <iframe
-              sandbox="allow-scripts"
+              sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
               srcDoc={iframeContent}
               style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
               title="preview"
             />
-          ) : (
+          ) : !code.trim() ? (
             <div className="h-full w-full flex items-center justify-center">
               <span style={{ color: 'rgba(232,228,220,0.22)', fontSize: 11 }}>
                 preview will render here
               </span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

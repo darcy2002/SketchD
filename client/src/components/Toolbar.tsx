@@ -15,9 +15,10 @@ const toolButtons: { id: Tool; icon: typeof MousePointer2 }[] = [
 interface ToolbarProps {
   onGenerate: () => void
   editor: Editor | null
+  onLogoClick: () => void
 }
 
-export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
+export default function Toolbar({ onGenerate, editor, onLogoClick }: ToolbarProps) {
   const [activeTool, setActiveTool] = useState<Tool>('draw')
   const isStreaming = useSketchStore((s) => s.isStreaming)
   const stopGeneration = useSketchStore((s) => s.stopGeneration)
@@ -48,9 +49,10 @@ export default function Toolbar({ onGenerate, editor }: ToolbarProps) {
       className="flex items-center justify-between px-3 border-b hairline shrink-0"
       style={{ height: 52, background: '#0a0a0c' }}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={onLogoClick} style={{ cursor: 'pointer' }}>
+        <img src="/sketchd-app-icon.svg" width={28} height={28} alt="sketchD" />
         <span className="font-medium tracking-tight" style={{ fontSize: 20 }}>
-          sketchd<span style={{ color: '#d4c4a0' }}>.</span>
+          sketchD<span style={{ color: '#d4c4a0' }}>.</span>
         </span>
       </div>
 

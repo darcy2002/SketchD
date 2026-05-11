@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="sketchD app icon">
+  <title>sketchD app icon</title>
+  <!-- dark rounded square background -->
+  <rect x="0" y="0" width="512" height="512" rx="108" fill="#0a0a0c"/>
+  <rect x="0.5" y="0.5" width="511" height="511" rx="107.5" fill="none" stroke="#e8e4dc" stroke-opacity="0.08" stroke-width="1"/>
+
+  <!-- icon centered, scaled up -->
+  <g transform="translate(140, 130) scale(4.5)">
+    <!-- pencil body -->
+    <rect x="6" y="4" width="10" height="28" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+    <!-- eraser -->
+    <rect x="6" y="2" width="10" height="5" fill="#d4c4a0"/>
+    <!-- ferrule line -->
+    <line x1="6" y1="9" x2="16" y2="9" stroke="#d4c4a0" stroke-opacity="0.4" stroke-width="1"/>
+    <!-- pencil tip -->
+    <path d="M6 32 L11 42 L16 32 Z" fill="none" stroke="#d4c4a0" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="11" y1="42" x2="11" y2="46" stroke="#d4c4a0" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- dotted to solid trail -->
+    <circle cx="24" cy="44" r="1.4" fill="#d4c4a0" fill-opacity="0.5"/>
+    <circle cx="31" cy="44" r="1.6" fill="#d4c4a0" fill-opacity="0.7"/>
+    <circle cx="38" cy="44" r="1.8" fill="#d4c4a0" fill-opacity="0.85"/>
+    <line x1="44" y1="44" x2="62" y2="44" stroke="#d4c4a0" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

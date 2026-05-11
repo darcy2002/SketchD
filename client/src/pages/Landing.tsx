@@ -163,9 +163,12 @@ export default function Landing({ onEnter }: LandingProps) {
         className="relative flex items-center justify-between px-8 shrink-0"
         style={{ height: 56, zIndex: 10, borderBottom: '1px solid rgba(232,228,220,0.06)' }}
       >
-        <span className="font-medium" style={{ fontSize: 18, letterSpacing: '-0.01em' }}>
-          sketchd<span style={{ color: '#d4c4a0' }}>.</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <img src="/sketchd-app-icon.svg" width={26} height={26} alt="sketchD" />
+          <span className="font-medium" style={{ fontSize: 18, letterSpacing: '-0.01em' }}>
+            sketchD<span style={{ color: '#d4c4a0' }}>.</span>
+          </span>
+        </div>
       </nav>
 
       {/* hero */}
@@ -186,11 +189,9 @@ export default function Landing({ onEnter }: LandingProps) {
             animation: 'fadeInUp 0.7s ease both',
           }}
         >
-          if you can{' '}
-          <span style={{ color: '#d4c4a0', textTransform: 'uppercase' }}>sketch</span>
-          , you can{' '}
-          <span style={{ color: '#d4c4a0', textTransform: 'uppercase' }}>code</span>
-          .
+          You sketch, It{' '}
+          <span style={{ color: '#d4c4a0' }}>CODES.</span>
+          {' '}sketchD.
         </h1>
 
         <p
@@ -204,7 +205,7 @@ export default function Landing({ onEnter }: LandingProps) {
             animation: 'fadeInUp 0.7s 0.1s ease both',
           }}
         >
-          draw a wireframe, get working react code. no prompts, no boilerplate.
+          draw a wireframe, get a working UI. no prompts, no boilerplate.
         </p>
 
         <button
@@ -227,7 +228,7 @@ export default function Landing({ onEnter }: LandingProps) {
           onMouseEnter={(e) => (e.currentTarget.style.background = '#e0d4b0')}
           onMouseLeave={(e) => (e.currentTarget.style.background = '#d4c4a0')}
         >
-          start sketching
+          Start Sketching
         </button>
 
         {/* demo */}

@@ -13,6 +13,7 @@ export default function OutputPanel() {
   const isStreaming = useSketchStore((s) => s.isStreaming)
   const setError = useSketchStore((s) => s.setError)
   const setCode = useSketchStore((s) => s.setCode)
+  const confirmation = useSketchStore((s) => s.confirmation)
   const prevStreamingRef = useRef(isStreaming)
   const [bottomHeight, setBottomHeight] = useState(180)
   const [assetWidthPct, setAssetWidthPct] = useState(50)
@@ -134,6 +135,34 @@ window.onerror = (msg, src, line) => {
 
   return (
     <div ref={containerRef} className="relative h-full w-full flex flex-col" style={{ background: '#0a0a0c' }}>
+      <style>{`
+        @keyframes sketchdFadeInUp {
+          from { opacity: 0; transform: translate(-50%, 8px) }
+          to   { opacity: 1; transform: translate(-50%, 0) }
+        }
+      `}</style>
+      {confirmation && (
+        <div style={{
+          position: 'absolute',
+          bottom: 16,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(212,196,160,0.15)',
+          border: '1px solid rgba(212,196,160,0.3)',
+          borderRadius: 8,
+          padding: '8px 16px',
+          fontSize: 12,
+          color: '#d4c4a0',
+          fontFamily: 'Geist Mono, monospace',
+          zIndex: 50,
+          whiteSpace: 'nowrap',
+          backdropFilter: 'blur(8px)',
+          animation: 'sketchdFadeInUp 0.2s ease both',
+          pointerEvents: 'none',
+        }}>
+          {confirmation}
+        </div>
+      )}
       <div className="absolute z-10 flex items-center gap-1.5 pointer-events-none" style={{ top: 16, right: 18 }}>
         <span style={{ color: '#d4c4a0', fontSize: 13 }} className="font-mono-code">
           {'{02}'}
@@ -230,20 +259,20 @@ window.onerror = (msg, src, line) => {
         </div>
 
         <div className="h-full w-full" style={{ display: tab === 'preview' ? 'block' : 'none' }}>
-          {tab === 'preview' && code.trim() ? (
+          {code.trim() ? (
             <iframe
               sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
               srcDoc={iframeContent}
               style={{ width: '100%', height: '100%', border: 'none', background: 'white' }}
               title="preview"
             />
-          ) : !code.trim() ? (
+          ) : (
             <div className="h-full w-full flex items-center justify-center">
               <span style={{ color: 'rgba(232,228,220,0.55)', fontSize: 13 }}>
                 preview will render here
               </span>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 

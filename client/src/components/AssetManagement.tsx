@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 import { Palette } from 'lucide-react'
 import { useSketchStore } from '../store/sketchStore'
 import EditableChip from './EditableChip'
+import { TOOLTIP_MAP } from './chipMeta'
 
 function extractColors(code: string): string[] {
   const hex = code.match(/#[0-9a-fA-F]{3,8}\b/g) ?? []
@@ -32,8 +33,29 @@ const swatchColor = (token: string): string | null => {
 
 export default function AssetManagement() {
   const code = useSketchStore((s) => s.code)
-  const colors = useMemo(() => extractColors(code), [code])
-  const fonts = useMemo(() => extractFonts(code), [code])
+  const isStreaming = useSketchStore((s) => s.isStreaming)
+  const setCode = useSketchStore((s) => s.setCode)
+  const setConfirmation = useSketchStore((s) => s.setConfirmation)
+  const colorsRef = useRef<string[]>([])
+  const fontsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    if (!isStreaming) {
+      colorsRef.current = extractColors(code)
+      fontsRef.current = extractFonts(code)
+    }
+  }, [isStreaming, code])
+
+  const colors = isStreaming ? colorsRef.current : extractColors(code)
+  const fonts = isStreaming ? fontsRef.current : extractFonts(code)
+
+  const handleCommit = (oldVal: string, newVal: string) => {
+    const escaped = oldVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(`\\b${escaped}\\b`, 'g')
+    setCode(code.replace(regex, newVal))
+    setConfirmation('✓ Code updated')
+    setTimeout(() => setConfirmation(null), 2500)
+  }
 
   return (
     <div className="h-full flex flex-col" style={{ background: '#0a0a0c' }}>
@@ -62,8 +84,17 @@ export default function AssetManagement() {
             <div className="flex flex-wrap gap-1.5">
               {colors.map((c) => {
                 const sw = swatchColor(c)
-                const pickable = c.startsWith('#')
-                return <EditableChip key={c} value={c} swatch={sw} colorPickable={pickable} />
+                const pickable = c.startsWith('#') || c.startsWith('rgb')
+                return (
+                  <EditableChip
+                    key={c}
+                    value={c}
+                    swatch={sw}
+                    colorPickable={pickable}
+                    tooltip={TOOLTIP_MAP[c] ?? `color: ${c}`}
+                    onCommit={handleCommit}
+                  />
+                )
               })}
             </div>
           ) : (
@@ -81,7 +112,12 @@ export default function AssetManagement() {
           {fonts.length ? (
             <div className="flex flex-wrap gap-1.5">
               {fonts.map((f) => (
-                <EditableChip key={f} value={f} />
+                <EditableChip
+                  key={f}
+                  value={f}
+                  tooltip={TOOLTIP_MAP[f] ?? `font: ${f}`}
+                  onCommit={handleCommit}
+                />
               ))}
             </div>
           ) : (

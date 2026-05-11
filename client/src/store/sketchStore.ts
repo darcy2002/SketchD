@@ -5,6 +5,7 @@ interface SketchStore {
   code: string
   isStreaming: boolean
   error: string | null
+  confirmation: string | null
   abortController: AbortController | null
 
   // mode
@@ -19,6 +20,7 @@ interface SketchStore {
   appendToken: (token: string) => void
   stopGeneration: () => void
   setError: (msg: string | null) => void
+  setConfirmation: (msg: string | null) => void
   resetCode: () => void
   setCode: (code: string) => void
   toggleRefineMode: () => void
@@ -28,6 +30,7 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
   code: '',
   isStreaming: false,
   error: null,
+  confirmation: null,
   abortController: null,
   mode: 'fresh',
   previousCode: null,
@@ -48,7 +51,8 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
     let accumulatedCode = ''
 
     try {
-      const response = await fetch('http://localhost:3001/api/generate', {
+      const apiBase = import.meta.env.VITE_API_URL ?? ''
+      const response = await fetch(`${apiBase}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64, mode, previousCode }),
@@ -131,6 +135,10 @@ export const useSketchStore = create<SketchStore>((set, get) => ({
 
   setError: (msg: string | null) => {
     set({ error: msg })
+  },
+
+  setConfirmation: (msg: string | null) => {
+    set({ confirmation: msg })
   },
 
   resetCode: () => {

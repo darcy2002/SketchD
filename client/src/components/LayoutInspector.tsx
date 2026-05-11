@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 import { Ruler } from 'lucide-react'
 import { useSketchStore } from '../store/sketchStore'
 import EditableChip from './EditableChip'
+import { TOOLTIP_MAP, getDropdownOptions } from './chipMeta'
 
 function inspect(code: string) {
   const elements = (code.match(/<[A-Za-z][A-Za-z0-9]*/g) ?? []).length
@@ -18,7 +19,26 @@ function inspect(code: string) {
 
 export default function LayoutInspector() {
   const code = useSketchStore((s) => s.code)
-  const data = useMemo(() => inspect(code), [code])
+  const isStreaming = useSketchStore((s) => s.isStreaming)
+  const setCode = useSketchStore((s) => s.setCode)
+  const setConfirmation = useSketchStore((s) => s.setConfirmation)
+  const dataRef = useRef(inspect(''))
+
+  useEffect(() => {
+    if (!isStreaming) {
+      dataRef.current = inspect(code)
+    }
+  }, [isStreaming, code])
+
+  const data = isStreaming ? dataRef.current : inspect(code)
+
+  const handleCommit = (oldVal: string, newVal: string) => {
+    const escaped = oldVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(`\\b${escaped}\\b`, 'g')
+    setCode(code.replace(regex, newVal))
+    setConfirmation('✓ Code updated')
+    setTimeout(() => setConfirmation(null), 2500)
+  }
 
   return (
     <div className="h-full flex flex-col" style={{ background: '#0a0a0c' }}>
@@ -42,9 +62,9 @@ export default function LayoutInspector() {
           <Stat label="grid" value={data.grid} />
         </div>
 
-        <Group label={`spacing · ${data.spacing.length}`} items={data.spacing} />
-        <Group label={`radius · ${data.rounded.length}`} items={data.rounded} />
-        <Group label={`shadow · ${data.shadows.length}`} items={data.shadows} />
+        <Group label={`spacing · ${data.spacing.length}`} items={data.spacing} onCommit={handleCommit} />
+        <Group label={`radius · ${data.rounded.length}`} items={data.rounded} onCommit={handleCommit} />
+        <Group label={`shadow · ${data.shadows.length}`} items={data.shadows} onCommit={handleCommit} />
       </div>
     </div>
   )
@@ -72,7 +92,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   )
 }
 
-function Group({ label, items }: { label: string; items: string[] }) {
+function Group({ label, items, onCommit }: { label: string; items: string[]; onCommit: (oldVal: string, newVal: string) => void }) {
   return (
     <div>
       <div
@@ -84,7 +104,13 @@ function Group({ label, items }: { label: string; items: string[] }) {
       {items.length ? (
         <div className="flex flex-wrap gap-1.5">
           {items.map((s) => (
-            <EditableChip key={s} value={s} />
+            <EditableChip
+              key={s}
+              value={s}
+              tooltip={TOOLTIP_MAP[s] ?? s}
+              dropdownOptions={getDropdownOptions(s)}
+              onCommit={onCommit}
+            />
           ))}
         </div>
       ) : (

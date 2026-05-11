@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="sketchD — sketch to code">
+  <title>sketchD — sketch to code</title>
+  <defs>
+    <radialGradient id="glow1" cx="20%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#d4c4a0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#d4c4a0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="85%" cy="80%" r="40%">
+      <stop offset="0%" stop-color="#d4c4a0" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#d4c4a0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="630" fill="#0a0a0c"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#glow1)"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- icon centered with wordmark below -->
+  <g transform="translate(600, 200)">
+    <g transform="translate(-110, 0) scale(4)">
+      <rect x="6" y="4" width="12" height="34" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+      <rect x="6" y="2" width="12" height="6" fill="#d4c4a0"/>
+      <line x1="6" y1="10" x2="18" y2="10" stroke="#d4c4a0" stroke-opacity="0.4" stroke-width="1"/>
+      <path d="M6 38 L12 50 L18 38 Z" fill="none" stroke="#d4c4a0" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="12" y1="50" x2="12" y2="54" stroke="#d4c4a0" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="28" cy="52" r="1.4" fill="#d4c4a0" fill-opacity="0.45"/>
+      <circle cx="36" cy="52" r="1.6" fill="#d4c4a0" fill-opacity="0.6"/>
+      <circle cx="44" cy="52" r="1.8" fill="#d4c4a0" fill-opacity="0.75"/>
+      <line x1="50" y1="52" x2="76" y2="52" stroke="#d4c4a0" stroke-width="2" stroke-linecap="round"/>
+      <text x="82" y="58" font-family="ui-monospace, monospace" font-size="14" fill="#d4c4a0">{ }</text>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="600" y="475" text-anchor="middle" font-family="system-ui, -apple-system, 'Satoshi', sans-serif" font-size="76" font-weight="500" fill="#e8e4dc" letter-spacing="-2">sketchD<tspan fill="#d4c4a0">.</tspan></text>
+
+  <!-- tagline -->
+  <text x="600" y="525" text-anchor="middle" font-family="ui-monospace, 'Geist Mono', monospace" font-size="22" fill="#e8e4dc" fill-opacity="0.5" letter-spacing="3">SKETCH → CODE</text>
+
+  <!-- subtle bottom hint -->
+  <text x="600" y="585" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" fill="#e8e4dc" fill-opacity="0.35">draw a wireframe, get working react code</text>
+</svg>

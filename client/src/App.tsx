@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import type { Editor } from 'tldraw'
 import Toolbar from './components/Toolbar'
 import SplitView from './components/SplitView'
@@ -24,8 +24,23 @@ export default function App() {
     startGeneration(base64)
   }
 
+  useEffect(() => {
+    const onPop = () => setShowLanding(true)
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  const handleEnter = () => {
+    history.pushState({ page: 'app' }, '', '?view=app')
+    setShowLanding(false)
+  }
+
+  const handleLogoClick = () => {
+    setShowLanding(true)
+  }
+
   if (showLanding) {
-    return <Landing onEnter={() => setShowLanding(false)} />
+    return <Landing onEnter={handleEnter} />
   }
 
   return (
@@ -33,7 +48,7 @@ export default function App() {
       className="flex flex-col h-screen w-screen overflow-hidden"
       style={{ background: '#0a0a0c', color: '#e8e4dc' }}
     >
-      <Toolbar onGenerate={handleGenerate} editor={editor} />
+      <Toolbar onGenerate={handleGenerate} editor={editor} onLogoClick={handleLogoClick} />
       <div className="flex-1 overflow-hidden">
         <SplitView ref={canvasRef} onEditorReady={setEditor} />
       </div>

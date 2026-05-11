@@ -1,0 +1,10 @@
+{
+  "name": "sketchd",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "start": "NODE_ENV=production node server/index.js",
+    "postinstall": "cd server && npm install"
+  }
+}

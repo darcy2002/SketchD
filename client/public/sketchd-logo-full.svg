@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="200" height="140" role="img" aria-label="sketchD logo">
+  <title>sketchD logo</title>
+  <g transform="translate(62, 14)">
+    <!-- pencil body -->
+    <rect x="6" y="4" width="12" height="34" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+    <!-- eraser -->
+    <rect x="6" y="2" width="12" height="6" fill="#d4c4a0"/>
+    <!-- ferrule line -->
+    <line x1="6" y1="10" x2="18" y2="10" stroke="#d4c4a0" stroke-opacity="0.4" stroke-width="1"/>
+    <!-- pencil tip -->
+    <path d="M6 38 L12 50 L18 38 Z" fill="none" stroke="#d4c4a0" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="12" y1="50" x2="12" y2="54" stroke="#d4c4a0" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- dotted to solid trail -->
+    <circle cx="28" cy="52" r="1.4" fill="#d4c4a0" fill-opacity="0.45"/>
+    <circle cx="36" cy="52" r="1.6" fill="#d4c4a0" fill-opacity="0.6"/>
+    <circle cx="44" cy="52" r="1.8" fill="#d4c4a0" fill-opacity="0.75"/>
+    <line x1="50" y1="52" x2="76" y2="52" stroke="#d4c4a0" stroke-width="2" stroke-linecap="round"/>
+    <!-- code brackets -->
+    <text x="82" y="58" font-family="ui-monospace, 'Geist Mono', 'JetBrains Mono', monospace" font-size="14" font-weight="400" fill="#d4c4a0">{ }</text>
+  </g>
+  <!-- wordmark -->
+  <text x="100" y="115" text-anchor="middle" font-family="system-ui, -apple-system, 'Satoshi', sans-serif" font-size="22" font-weight="500" fill="#e8e4dc" letter-spacing="-0.5">sketchD<tspan fill="#d4c4a0">.</tspan></text>
+</svg>

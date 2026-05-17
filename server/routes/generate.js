@@ -1,10 +1,31 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { getProvider } from "../llm/index.js";
 import { FRESH_PROMPT, REFINE_PROMPT } from "../prompts/system.js";
 
 const router = Router();
 
-router.post("/generate", async (req, res) => {
+const generateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests. Please wait a minute before generating again.",
+  },
+});
+
+const generateDailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Daily generation limit reached. Try again tomorrow.",
+  },
+});
+
+router.post("/generate", generateLimiter, generateDailyLimiter, async (req, res) => {
   const { imageBase64, mode = "fresh", previousCode } = req.body;
 
   if (!imageBase64) {

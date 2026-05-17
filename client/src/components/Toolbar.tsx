@@ -112,12 +112,6 @@ export default function Toolbar({ onGenerate, editor, onLogoClick }: ToolbarProp
       </div>
 
       <div className="flex items-center gap-3">
-        <span
-          className="font-mono-code"
-          style={{ fontSize: 12, color: 'rgba(232,228,220,0.45)' }}
-        >
-          kimi k2.6 / nvidia
-        </span>
         <button
           onClick={handleGenerateClick}
           className="flex items-center gap-1.5 rounded-md px-5 font-medium"
@@ -136,7 +130,7 @@ export default function Toolbar({ onGenerate, editor, onLogoClick }: ToolbarProp
           ) : (
             <>
               <Zap size={11} strokeWidth={2} />
-              generate
+              GENERATE
             </>
           )}
         </button>
